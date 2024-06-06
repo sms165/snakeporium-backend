@@ -53,9 +53,11 @@ public class AuthController {
     private final AuthService authService;
 
 
-    @CrossOrigin(origins = "http://localhost:61352") // Replace with your Angular app's origin
+
     @PostMapping("/authenticate")
     public void createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws IOException, JSONException {
+        String username = authenticationRequest.getUsername();
+        System.out.println("Username: " + username);
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         } catch (BadCredentialsException e) {
@@ -76,7 +78,7 @@ public class AuthController {
                     .put("role", optionalUser.get().getRole())
                     .toString()
             );
-            response.addHeader("Access-Control-Allow-Origin", "http://localhost:61352"); // Replace with your Angular app's origin
+
             response.addHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE, PATCH");
             response.addHeader("Access-Control-Allow-Headers", "Authorization, X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept, X-Custom-Header");
             response.addHeader("Access-Control-Expose-Headers", "Authorization");
