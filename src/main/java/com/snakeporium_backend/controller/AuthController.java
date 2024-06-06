@@ -29,6 +29,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +41,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthController {
 
+
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
@@ -50,17 +52,21 @@ public class AuthController {
 
     private final AuthService authService;
 
+
+    @CrossOrigin(origins = "http://localhost:61352") // Replace with your Angular app's origin
     @PostMapping("/authenticate")
     public void createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws IOException, JSONException {
-
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid username or password", e);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password");
+            return;
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during authentication");
+            return;
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-
         Optional<User> optionalUser = userRepository.findByEmail(userDetails.getUsername());
         final String jwt = jwtUtil.generateToken(userDetails.getUsername());
 
@@ -70,10 +76,18 @@ public class AuthController {
                     .put("role", optionalUser.get().getRole())
                     .toString()
             );
-
+            response.addHeader("Access-Control-Allow-Origin", "http://localhost:61352"); // Replace with your Angular app's origin
+            response.addHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE, PATCH");
+            response.addHeader("Access-Control-Allow-Headers", "Authorization, X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept, X-Custom-Header");
+            response.addHeader("Access-Control-Expose-Headers", "Authorization");
             response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwt);
+        } else {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not found");
         }
-    }
+
+
+
+}
 
     @PostMapping("/test")
     public ResponseEntity<String> testEndpoint() {
