@@ -26,7 +26,7 @@ public class AuthServiceImpl  implements AuthService {
         user.setLastName(registerRequest.getLastName());
         user.setEmail(registerRequest.getEmail());
         // Assuming you have a field for username in the RegisterRequest
-//        user.setUsername(registerRequest.getUsername());
+//      user.setUsername(registerRequest.getUsername());
         user.setPassword(new BCryptPasswordEncoder().encode(registerRequest.getPassword()));
         user.setRole(UserRole.CUSTOMER);
         User createdUser = userRepository.save(user);

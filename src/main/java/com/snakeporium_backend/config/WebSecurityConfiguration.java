@@ -31,7 +31,10 @@ public class WebSecurityConfiguration {
 
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection for testing
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/authenticate", "/register", "/order/**", "/test")
+                        .requestMatchers("/authenticate", "/api/**", "/register", "/order/**", "/test", "/api/admin" +
+                                        "/category",
+                                "/api/admin",
+                                "/api/admin/product")
                         .permitAll()
                         .requestMatchers("/api/**")
                         .authenticated()
