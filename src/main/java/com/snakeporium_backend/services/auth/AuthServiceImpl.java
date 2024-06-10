@@ -3,7 +3,10 @@ package com.snakeporium_backend.services.auth;
 
 import com.snakeporium_backend.dto.RegisterRequest;
 import com.snakeporium_backend.dto.UserDto;
+import com.snakeporium_backend.entity.Order;
 import com.snakeporium_backend.entity.User;
+import com.snakeporium_backend.enums.OrderStatus;
+import com.snakeporium_backend.repository.OrderRepository;
 import com.snakeporium_backend.repository.UserRepository;
 import com.snakeporium_backend.enums.UserRole;
 import jakarta.annotation.PostConstruct;
@@ -20,6 +23,9 @@ public class AuthServiceImpl  implements AuthService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     public UserDto createUser(RegisterRequest registerRequest){
         User user = new User();
         user.setFirstName(registerRequest.getFirstName());
@@ -30,6 +36,15 @@ public class AuthServiceImpl  implements AuthService {
         user.setPassword(new BCryptPasswordEncoder().encode(registerRequest.getPassword()));
         user.setRole(UserRole.CUSTOMER);
         User createdUser = userRepository.save(user);
+
+        Order order = new Order();
+        order.setAmount(0.0);
+        order.setTotalAmount(0.0);
+        order.setDiscount(0.0);
+        order.setUser(createdUser);
+        order.setOrderStatus(OrderStatus.Pending);
+        orderRepository.save(order);
+
 
         UserDto userDto = new UserDto();
         userDto.setId(createdUser.getId());

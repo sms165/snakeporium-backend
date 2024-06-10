@@ -29,14 +29,15 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
 
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection for testing
+                .csrf(AbstractHttpConfigurer::disable)
+                // Disable CSRF protection for testing
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/authenticate", "/api/**", "/register", "/order/**", "/test", "/api/admin" +
-                                        "/category",
-                                "/api/admin",
-                                "/api/admin/product")
+                        .requestMatchers("/authenticate", "/register", "/order/**", "/test", "api/customer/cart/**",
+                                "/api" +
+                                        "/admin/category", "/api/admin", "/api/admin/product", "/api/customer/products", "/api/customer/cart"
+                                        )
                         .permitAll()
-                        .requestMatchers("/api/**")
+                        .requestMatchers("/api/admin/**")
                         .authenticated()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement
