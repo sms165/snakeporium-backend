@@ -212,7 +212,7 @@ public class CartServiceImpl implements CartService {
                 activeOrder.setOrderDescription(placeOrderDto.getOrderDescription());
                 activeOrder.setAddress(placeOrderDto.getAddress());
                 activeOrder.setDate(new Date());
-                activeOrder.setOrderStatus(OrderStatus.Packed);
+                activeOrder.setOrderStatus(OrderStatus.Placed);
 
                 // Ensure the tracking ID is unique
                 UUID trackingId = UUID.randomUUID();
@@ -267,6 +267,11 @@ public class CartServiceImpl implements CartService {
             }
         }
         return null;
+    }
+
+    public List<OrderDto> getMyPlacedOrders(Long userId) {
+return orderRepository.findByUserIdAndOrderStatusIn(userId, List.of(OrderStatus.Placed, OrderStatus.Shipped,
+        OrderStatus.Delivered)).stream().map(order -> order.getOrderDto()).collect(Collectors.toList());
     }
 
 }

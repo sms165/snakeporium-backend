@@ -57,5 +57,71 @@ public class AdminProductServiceImpl implements AdminProductService {
         return false;
     }
 
+    public ProductDto getProductById(Long productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            return product.get().getDto();
+        }else{
+            return null;
+        }
+    }
+
+    public ProductDto updateProduct(Long productId, ProductDto productDto) throws IOException {
+        // Retrieve the existing product entity from the database
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+
+        // Check if the product exists
+        if (optionalProduct.isPresent()) {
+            // Get the existing product entity
+            Product existingProduct = optionalProduct.get();
+
+            // Update the fields of the existing product with values from the DTO
+            // Use the existing value if the DTO value is null
+            String name = productDto.getName() != null ? productDto.getName() : existingProduct.getName();
+            String description = productDto.getDescription() != null ? productDto.getDescription() : existingProduct.getDescription();
+            Double price = productDto.getPrice() != null ? productDto.getPrice() : existingProduct.getPrice();
+            Integer quantity = productDto.getQuantity() != null ? productDto.getQuantity() : existingProduct.getQuantity();
+            String species = productDto.getSpecies() != null ? productDto.getSpecies() : existingProduct.getSpecies();
+            String sex = productDto.getSex() != null ? productDto.getSex() : existingProduct.getSex();
+            String imageFormat = productDto.getImageFormat() != null ? productDto.getImageFormat() : existingProduct.getImageFormat();
+
+            // Update the existing product with the new or existing values
+            existingProduct.setName(name);
+            existingProduct.setDescription(description);
+            existingProduct.setPrice(price);
+            existingProduct.setQuantity(quantity);
+            existingProduct.setSpecies(species);
+            existingProduct.setSex(sex);
+            existingProduct.setImageFormat(imageFormat);
+
+            // Update category if a new category ID is provided and it exists in the database
+            if (productDto.getCategoryId() != null && !productDto.getCategoryId().equals(existingProduct.getCategory().getId())) {
+                Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
+                if (optionalCategory.isPresent()) {
+                    existingProduct.setCategory(optionalCategory.get());
+                } else {
+                    throw new IllegalArgumentException("Category not found for ID: " + productDto.getCategoryId());
+                }
+            }
+
+            // If image is provided, update it
+            if (productDto.getImg() != null) {
+                existingProduct.setImg(productDto.getImg().getBytes());
+            }
+
+            // Validate required fields
+            if (name == null || price == null || quantity == null) {
+                throw new IllegalArgumentException("Name, price, and quantity are required fields.");
+            }
+
+            // Save the updated product entity
+            Product updatedProduct = productRepository.save(existingProduct);
+
+            // Convert the updated product entity to DTO and return
+            return updatedProduct.getDto();
+        } else {
+            throw new IllegalArgumentException("Product not found for ID: " + productId);
+        }
+    }
 
 }

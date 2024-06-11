@@ -1,7 +1,9 @@
 package com.snakeporium_backend.controller.admin;
 
 
+import com.snakeporium_backend.dto.FAQDto;
 import com.snakeporium_backend.dto.ProductDto;
+import com.snakeporium_backend.services.admin.faq.FAQService;
 import com.snakeporium_backend.services.adminproduct.AdminProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminProductController {
 
-    private  final AdminProductService adminProductService;
+    private final AdminProductService adminProductService;
+
+    private final FAQService faqService;
 
     @PostMapping("/product")
     public ResponseEntity<ProductDto> addProduct(@ModelAttribute ProductDto productDto) throws IOException {
@@ -37,12 +41,46 @@ public class AdminProductController {
     }
 
     @DeleteMapping("product/{productId}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId){
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         boolean deleted = adminProductService.deleteProduct(productId);
-        if(deleted){
+        if (deleted) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         return ResponseEntity.noContent().build();
     }
 
+
+    @PostMapping("/faq/{productId}")
+    public ResponseEntity<FAQDto> postFAQ(@PathVariable Long productId, @RequestBody FAQDto faqDto) throws IOException {
+            return ResponseEntity.status(HttpStatus.CREATED).body(faqService.postFAQ(productId, faqDto));
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId) {
+        ProductDto productDto = adminProductService.getProductById(productId);
+        if (productDto != null) {
+            return ResponseEntity.ok(productDto);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/product/{productId}")
+    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long productId,
+                                                    @ModelAttribute ProductDto productDto) throws IOException {
+        System.out.println("Received productId: " + productId);
+        productDto.setId(productId);
+        productDto.setCategoryId(productDto.getCategoryId());
+        System.out.println("Received ProductDto: " + productDto);
+
+
+
+        ProductDto updatedProduct = adminProductService.updateProduct(productId, productDto);
+        if (updatedProduct != null) {
+            return ResponseEntity.ok(updatedProduct);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }
+

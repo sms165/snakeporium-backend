@@ -3,7 +3,7 @@ package com.snakeporium_backend.enums;
 public enum OrderStatus {
 
     Pending,
-    Packed,
+    Placed,
     Shipped,
     Delivered
 }
