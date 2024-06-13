@@ -1,5 +1,6 @@
 package com.snakeporium_backend.controller.admin;
 
+import com.snakeporium_backend.dto.AnalyticsResponse;
 import com.snakeporium_backend.dto.OrderDto;
 import com.snakeporium_backend.enums.OrderStatus;
 import com.snakeporium_backend.services.admin.order.AdminOrderService;
@@ -34,4 +35,10 @@ public class AdminOrderController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(orderDto);
     }
+
+    @GetMapping("/orders/analytics")
+    public ResponseEntity<AnalyticsResponse> getAnalytics() {
+        return ResponseEntity.ok(adminOrderService.calculateAnalytics());
+    }
+
 }

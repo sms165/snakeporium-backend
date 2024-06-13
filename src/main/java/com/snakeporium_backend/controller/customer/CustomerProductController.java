@@ -1,6 +1,7 @@
 package com.snakeporium_backend.controller.customer;
 
 
+import com.snakeporium_backend.dto.ProductDetailDto;
 import com.snakeporium_backend.dto.ProductDto;
 import com.snakeporium_backend.services.customer.CustomerProductService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,15 @@ public class CustomerProductController {
     public ResponseEntity<List<ProductDto>> getAllProductByName(@PathVariable String name) {
         List<ProductDto> productDtos = customerProductService.searchProductByTitle(name);
         return ResponseEntity.ok(productDtos);
+    }
+
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<ProductDetailDto> getAllProductDetailById(@PathVariable Long productId) {
+        ProductDetailDto productDetailDto = customerProductService.getProductDetailById(productId);
+        if(productDetailDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(productDetailDto);
     }
 
 

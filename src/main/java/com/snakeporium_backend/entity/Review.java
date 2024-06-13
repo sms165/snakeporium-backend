@@ -23,6 +23,8 @@ public class Review {
     @Column(columnDefinition = "longblob")
     private byte[] img;
 
+    private String imageFormat;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "userId", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -43,6 +45,7 @@ public class Review {
         dto.setProductId(product.getId());
         dto.setUserId(user.getId());
         dto.setUsername(user.getUsername());
+        dto.setImageFormat(imageFormat);
 
         return dto;
     }

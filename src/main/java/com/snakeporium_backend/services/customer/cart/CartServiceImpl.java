@@ -5,6 +5,7 @@ import com.snakeporium_backend.entity.*;
 import com.snakeporium_backend.enums.OrderStatus;
 import com.snakeporium_backend.exceptions.ValidationException;
 import com.snakeporium_backend.repository.*;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -272,6 +273,15 @@ public class CartServiceImpl implements CartService {
     public List<OrderDto> getMyPlacedOrders(Long userId) {
 return orderRepository.findByUserIdAndOrderStatusIn(userId, List.of(OrderStatus.Placed, OrderStatus.Shipped,
         OrderStatus.Delivered)).stream().map(order -> order.getOrderDto()).collect(Collectors.toList());
+    }
+
+
+    public OrderDto searchOrderByTrackingId(UUID trackingId) {
+        Optional<Order> optionalOrder = orderRepository.findByTrackingId(trackingId);
+        if (optionalOrder.isPresent()) {
+            return optionalOrder.get().getOrderDto();
+        }
+        return null;
     }
 
 }

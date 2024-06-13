@@ -19,7 +19,7 @@ public class ReviewDto {
 
     private String description;
 
-
+    private String imageFormat;
     private MultipartFile img;
     private byte[] returnedImg;
 
