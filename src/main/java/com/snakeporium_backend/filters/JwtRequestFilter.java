@@ -3,6 +3,8 @@ package com.snakeporium_backend.filters;
 
 import com.snakeporium_backend.services.jwt.UserDetailsServiceImpl;
 import com.snakeporium_backend.utils.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,12 +18,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-
+    private static final Logger logger = Logger.getLogger(JwtRequestFilter.class.getName());
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -33,8 +36,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtToken = authHeader.substring(7);
-            username = jwtUtil.extractUsername(jwtToken);
+            System.out.println(" JWT Token: " + jwtToken);
+            try {
+                username = jwtUtil.extractUsername(jwtToken);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Unable to get JWT Token: " + e.getMessage());
+            } catch (ExpiredJwtException e) {
+                System.out.println("JWT Token has expired: " + e.getMessage());
+            } catch (MalformedJwtException e) {
+                System.out.println("Malformed JWT Token: " + jwtToken); // Log the JWT token string
+                throw e; // Rethrow the exception to handle it upstream
+            }
+        } else {
+            System.out.println("JWT Token does not begin with Bearer String");
         }
+
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);

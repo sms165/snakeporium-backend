@@ -32,4 +32,13 @@ public class User {
     @Lob
     @Column( columnDefinition = "longblob")
     private byte[] image;
+
+    private String street;
+    private Long streetNumber;
+    private String city;
+
+    private String state;
+    private String zip;
+    private String phone;
+
 }

@@ -34,7 +34,9 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/authenticate", "/register", "/order/**", "/test",
                                 "api/customer/cart/", "/api/admin/orders", "api/customer/orders/**",
-                                "api/admin/product/**","api/customer", "api/customer/review", "api/customer/wishlist" +
+                                "api/admin/product/**","api/customer","api/customer/profile", "api/customer/review",
+                                "api/customer" +
+                                        "/wishlist" +
                                         "/cart/**",
                                  "api/customer" +
                                         "/placeOrder",
