@@ -92,6 +92,56 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    public boolean deleteProduct(Long id) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            productRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    public ResponseEntity<?> removeItemFromCart(Long productId, Long userId) {
+        // Find the active order for the user
+        System.out.println("Starting removeItemFromCart method...");
+
+        // Find the active order for the user
+        System.out.println("Finding active order for user: " + userId);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.Pending);
+
+        if (activeOrder == null) {
+            System.out.println("No active order found for user " + userId);
+            System.out.println("Returning response with status NOT_FOUND...");
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active order found for user");
+        }
+
+        // Find the cart item to remove
+        System.out.println("Finding cart item with productId " + productId + " in order " + activeOrder.getId());
+        Optional<CartItems> optionalCartItem = cartItemRepository.findByProductIdAndOrderIdAndUserId(productId, activeOrder.getId(), userId);
+
+        if (optionalCartItem.isPresent()) {
+            CartItems cartItemToRemove = optionalCartItem.get();
+            activeOrder.getCartItems().remove(cartItemToRemove); // Remove cart item from order
+
+            // Update order total amount
+            activeOrder.setTotalAmount(activeOrder.getTotalAmount() - cartItemToRemove.getPrice());
+            activeOrder.setAmount(activeOrder.getAmount() - cartItemToRemove.getPrice());
+
+            // Save updated order
+            orderRepository.save(activeOrder);
+
+            // Delete the cart item
+            cartItemRepository.delete(cartItemToRemove);
+
+            return ResponseEntity.status(HttpStatus.OK).body(activeOrder.getOrderDto());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found in the cart");
+        }
+    }
+
+
+
     public OrderDto getCardByUserId(Long userId) {
         Order activeOrder = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.Pending);
 

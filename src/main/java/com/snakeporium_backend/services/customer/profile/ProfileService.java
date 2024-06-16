@@ -11,5 +11,5 @@ public interface ProfileService {
 
     UserDto getProfileByUserId(Long userId);
 
-
+    UserDto updatePassword(Long userId, UserDto userDto);
 }

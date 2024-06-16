@@ -21,12 +21,19 @@ public class Product {
     private Double price;
     private Integer quantity;
     private String species;
-    private String sex;
+
     private String imageFormat;
+    private String latin;
 
     @Lob
     @Column(columnDefinition = "longblob")
     private byte[] img;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "sex_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private Sex sex;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
@@ -41,12 +48,14 @@ public class Product {
         dto.setDescription(description);
         dto.setPrice(price);
         dto.setQuantity(quantity);
-        dto.setSpecies(species);
-        dto.setSex(sex);
+//        dto.setSpecies(species);
+        dto.setSexId(sex.getId());
         dto.setByteImg(img);
         dto.setCategoryId(category.getId());
         dto.setImageFormat(imageFormat);
         dto.setCategoryName(category.getName());
+        dto.setSexName(sex.getName());
+        dto.setLatin(latin);
 
         return dto;
     }

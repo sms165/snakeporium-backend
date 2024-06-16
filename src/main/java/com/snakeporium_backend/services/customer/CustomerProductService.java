@@ -12,4 +12,6 @@ public interface CustomerProductService {
     List<ProductDto> searchProductByTitle(String name);
 
     ProductDetailDto getProductDetailById(Long productId);
+
+    List<String> getRandomQuestionsWithProductDetails(Long productId);
 }

@@ -15,11 +15,12 @@ public class ProductDto {
     private String description;
     private Double price;
     private Integer quantity = 1;
-    private String species;
-    private String sex;
+//    private String species;
+    private Long sexId;
+    private String sexName;
     private byte[] byteImg;
     private String imageFormat;
-
+private String latin;
     private Long categoryId;
 
     private String categoryName;

@@ -4,8 +4,10 @@ package com.snakeporium_backend.services.adminproduct;
 import com.snakeporium_backend.dto.ProductDto;
 import com.snakeporium_backend.entity.Category;
 import com.snakeporium_backend.entity.Product;
+import com.snakeporium_backend.entity.Sex;
 import com.snakeporium_backend.repository.CategoryRepository;
 import com.snakeporium_backend.repository.ProductRepository;
+import com.snakeporium_backend.repository.SexRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final ProductRepository productRepository;
 
     private final CategoryRepository categoryRepository;
+    private final SexRepository sexRepository;
 
     public ProductDto addProduct(ProductDto productDto) throws IOException {
         Product product = new Product();
@@ -29,12 +32,15 @@ public class AdminProductServiceImpl implements AdminProductService {
         product.setPrice(productDto.getPrice());
         product.setImg(productDto.getImg().getBytes());
         product.setQuantity(productDto.getQuantity());
-        product.setSpecies(productDto.getSpecies());
-        product.setSex(productDto.getSex());
+//        product.setSpecies(productDto.getSpecies());
+
         product.setImageFormat(productDto.getImageFormat());
         Category category = categoryRepository.findById(productDto.getCategoryId()).orElseThrow();
-
+Sex sex = sexRepository.findById(productDto.getSexId()).orElseThrow();
+product.setSex(sex);
         product.setCategory(category);
+
+
         return productRepository.save(product).getDto();
     }
 
@@ -81,26 +87,37 @@ public class AdminProductServiceImpl implements AdminProductService {
             String description = productDto.getDescription() != null ? productDto.getDescription() : existingProduct.getDescription();
             Double price = productDto.getPrice() != null ? productDto.getPrice() : existingProduct.getPrice();
             Integer quantity = productDto.getQuantity() != null ? productDto.getQuantity() : existingProduct.getQuantity();
-            String species = productDto.getSpecies() != null ? productDto.getSpecies() : existingProduct.getSpecies();
-            String sex = productDto.getSex() != null ? productDto.getSex() : existingProduct.getSex();
+//            String species = productDto.getSpecies() != null ? productDto.getSpecies() : existingProduct.getSpecies();
+//            String sex = productDto.getSex() != null ? productDto.getSex() : existingProduct.getSex();
             String imageFormat = productDto.getImageFormat() != null ? productDto.getImageFormat() : existingProduct.getImageFormat();
+            String latin = productDto.getLatin() != null ? productDto.getLatin() : existingProduct.getLatin();
 
             // Update the existing product with the new or existing values
             existingProduct.setName(name);
             existingProduct.setDescription(description);
             existingProduct.setPrice(price);
             existingProduct.setQuantity(quantity);
-            existingProduct.setSpecies(species);
-            existingProduct.setSex(sex);
+//            existingProduct.setSpecies(species);
+//            existingProduct.setSex(sex);
+            existingProduct.setLatin(latin);
             existingProduct.setImageFormat(imageFormat);
 
-            // Update category if a new category ID is provided and it exists in the database
+            // Update category if a new category ID is provided, and it exists in the database
             if (productDto.getCategoryId() != null && !productDto.getCategoryId().equals(existingProduct.getCategory().getId())) {
                 Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategoryId());
                 if (optionalCategory.isPresent()) {
                     existingProduct.setCategory(optionalCategory.get());
                 } else {
                     throw new IllegalArgumentException("Category not found for ID: " + productDto.getCategoryId());
+                }
+            }
+
+            if (productDto.getSexId() != null && !productDto.getSexId().equals(existingProduct.getSex().getId())) {
+                Optional<Sex> optionalSex = sexRepository.findById(productDto.getSexId());
+                if (optionalSex.isPresent()) {
+                    existingProduct.setSex(optionalSex.get());
+                } else {
+                    throw new IllegalArgumentException("Sex not found for ID: " + productDto.getCategoryId());
                 }
             }
 

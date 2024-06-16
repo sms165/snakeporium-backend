@@ -41,5 +41,10 @@ public class CustomerProductController {
         return ResponseEntity.ok(productDetailDto);
     }
 
+    @GetMapping("/random-questions/{productId}")
+    public ResponseEntity<List<String>> getRandomQuestionsWithProductDetails(@PathVariable Long productId) {
+        List<String> randomQuestions = customerProductService.getRandomQuestionsWithProductDetails(productId);
+        return ResponseEntity.ok(randomQuestions);
+    }
 
 }

@@ -32,6 +32,33 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(orderDto);
     }
 
+//    @DeleteMapping("product/{productId}")
+//    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+//        boolean deleted = adminProductService.deleteProduct(productId);
+//        if (deleted) {
+//            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+//        }
+//        return ResponseEntity.noContent().build();
+//    }
+    @DeleteMapping("/cart/{userId}/{productId}")
+    public ResponseEntity<?> removeItemFromCart(@PathVariable Long userId, @PathVariable Long productId) {
+
+
+        try {
+
+
+            ResponseEntity<?> orderDto = cartService.removeItemFromCart(productId, userId);
+            if (orderDto != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(orderDto);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found in the cart");
+            }
+        } catch (ValidationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+
     @GetMapping("/coupon/{userId}/{code}")
     public ResponseEntity<?> applyCoupon(@PathVariable Long userId, @PathVariable String code) {
         try {

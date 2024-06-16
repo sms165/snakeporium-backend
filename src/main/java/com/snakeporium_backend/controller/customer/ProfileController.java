@@ -45,6 +45,7 @@ public class ProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(userDto);
     }
 
+
     @PutMapping("/profile")
     public ResponseEntity<UserDto> updateUser(@RequestParam Long userId, @RequestBody UserDto userDto) throws IOException {
 
@@ -55,6 +56,24 @@ public class ProfileController {
 
         // Update user
         UserDto updatedUser = profileService.updateProfile(userId, userDto);
+
+        if (updatedUser != null) {
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PutMapping("/profile/password")
+    public ResponseEntity<UserDto> updatePassword(@RequestParam Long userId, @RequestBody UserDto userDto) throws IOException {
+
+
+
+        System.out.println("Received userId: " + userId);
+        System.out.println("Received UserDto: " + userDto);
+
+        // Update user
+        UserDto updatedUser = profileService.updatePassword(userId, userDto);
 
         if (updatedUser != null) {
             return ResponseEntity.ok(updatedUser);

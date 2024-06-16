@@ -53,7 +53,29 @@ public class ProfileServiceImpl implements ProfileService {
         return userDto;
     }
 
+    public UserDto updatePassword(Long userId, UserDto userDto) {
+        // Retrieve the existing user entity from the database
+        Optional<User> optionalUser = userRepository.findById(userId);
+        System.out.println("Updating password for user with ID: " + userId);
+        // Check if the user exists
+        if (optionalUser.isPresent()) {
+            // Get the existing user entity
+            User existingUser = optionalUser.get();
 
+            String newPassword = userDto.getPassword();
+            existingUser.setPassword(new BCryptPasswordEncoder().encode(newPassword));
+
+
+            // Save the updated user entity
+            userRepository.save(existingUser);
+            System.out.println("Updated password for user with ID " + userId + ": " + existingUser.getPassword());
+            // You may want to return an updated UserDto if needed
+            return mapUserToUserDto(existingUser);
+        } else {
+            // Handle case where user is not found
+            throw new IllegalArgumentException("User not found for ID: " + userId);
+        }
+    }
 
 
 
@@ -117,6 +139,7 @@ public class ProfileServiceImpl implements ProfileService {
         userDto.setStreetNumber(user.getStreetNumber());
         userDto.setZip(user.getZip());
         userDto.setPhone(user.getPhone());
+        userDto.setPassword(user.getPassword());
         // Map other fields as needed
 
         return userDto;

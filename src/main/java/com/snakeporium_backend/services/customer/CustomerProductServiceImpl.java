@@ -12,8 +12,10 @@ import com.snakeporium_backend.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +53,24 @@ public class CustomerProductServiceImpl implements CustomerProductService {
             return productDetailDto;
         }
         return null;
+    }
+
+    public List<String> getRandomQuestionsWithProductDetails(Long productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        List<String> randomQuestions = new ArrayList<>();
+        if (product.isPresent()) {
+            ProductDto productDto = product.get().getDto(); // Fetch the ProductDto
+
+            randomQuestions.add(String.format("What are the benefits of using %s?", productDto.getName()));
+            randomQuestions.add(String.format("How do I use %s?", productDto.getName()));
+            randomQuestions.add(String.format("Can %s be customized?", productDto.getName()));
+            // Add more questions as needed
+
+            return randomQuestions;
+        } else {
+            randomQuestions.add("Product not found");
+            return randomQuestions;
+        }
     }
 
 }
