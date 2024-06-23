@@ -39,6 +39,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "https://snakeporium.yblackbox.com")
 public class AuthController {
 
 
