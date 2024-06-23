@@ -36,6 +36,7 @@ public class Wishlist {
         wishlistDto.setProductDescription(product.getDescription());
         wishlistDto.setPrice(product.getPrice());
         wishlistDto.setUserId(user.getId());
+        wishlistDto.setLatin(product.getLatin());
 
 
         return wishlistDto;

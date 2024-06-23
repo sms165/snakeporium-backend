@@ -56,6 +56,12 @@ public class Order {
         orderDto.setDate(date);
         orderDto.setAmount(amount);
         orderDto.setAddress(address);
+        orderDto.setStreet(user.getStreet());
+        orderDto.setStreetNumber(user.getStreetNumber());
+        orderDto.setZip(user.getZip());
+        orderDto.setState(user.getState());
+        orderDto.setCity(user.getCity());
+        orderDto.setPhone(user.getPhone());
         orderDto.setOrderStatus(orderStatus);
         orderDto.setTrackingId(trackingId);
         orderDto.setUserName(user.getFirstName());

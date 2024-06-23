@@ -18,4 +18,6 @@ public class WishlistDto {
     private byte[] returnedImg;
 
     private double price;
+
+    private String latin;
 }

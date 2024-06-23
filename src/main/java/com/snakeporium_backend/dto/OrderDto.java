@@ -35,7 +35,12 @@ public class OrderDto {
 
 
     private String  userName;
-
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
+    private Long streetNumber;
+    private String phone;
 
     private List<CartItemsDto> cartItems;
 
