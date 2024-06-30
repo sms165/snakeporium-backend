@@ -32,14 +32,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(orderDto);
     }
 
-//    @DeleteMapping("product/{productId}")
-//    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
-//        boolean deleted = adminProductService.deleteProduct(productId);
-//        if (deleted) {
-//            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//        }
-//        return ResponseEntity.noContent().build();
-//    }
+
     @DeleteMapping("/cart/{userId}/{productId}")
     public ResponseEntity<?> removeItemFromCart(@PathVariable Long userId, @PathVariable Long productId) {
 

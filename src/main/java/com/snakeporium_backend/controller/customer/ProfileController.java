@@ -47,10 +47,8 @@ public class ProfileController {
 
 
     @PutMapping("/profile")
-    public ResponseEntity<UserDto> updateUser(@RequestParam Long userId, @RequestBody UserDto userDto) throws IOException {
-
-
-
+    public ResponseEntity<UserDto> updateUser(@RequestParam Long userId, @RequestBody UserDto userDto)
+            throws IOException {
         System.out.println("Received userId: " + userId);
         System.out.println("Received UserDto: " + userDto);
 
@@ -65,10 +63,8 @@ public class ProfileController {
     }
 
     @PutMapping("/profile/password")
-    public ResponseEntity<UserDto> updatePassword(@RequestParam Long userId, @RequestBody UserDto userDto) throws IOException {
-
-
-
+    public ResponseEntity<UserDto> updatePassword(@RequestParam Long userId, @RequestBody UserDto userDto)
+            throws IOException {
         System.out.println("Received userId: " + userId);
         System.out.println("Received UserDto: " + userDto);
 

@@ -28,6 +28,8 @@ public class CustomerProductServiceImpl implements CustomerProductService {
 
     private final ReviewRepository reviewRepository;
 
+    private final OpenAiChatService openAiChatService;
+
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream().map(Product::getDto).collect(Collectors.toList());
@@ -70,6 +72,40 @@ public class CustomerProductServiceImpl implements CustomerProductService {
         } else {
             randomQuestions.add("Product not found");
             return randomQuestions;
+        }
+    }
+
+    // Method to get predefined questions and fetch responses from OpenAI
+    public List<String> getPredefinedQuestionsAndResponses(Long productId) {
+        List<String> predefinedQuestions = getPredefinedQuestionsWithProductDetails(productId);
+        List<String> responses = new ArrayList<>();
+
+        for (String question : predefinedQuestions) {
+            String response = openAiChatService.getResponse(question);
+            responses.add(response);
+        }
+
+        return responses;
+    }
+
+    // Additional method to generate predefined questions related to product
+    public List<String> getPredefinedQuestionsWithProductDetails(Long productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        List<String> predefinedQuestions = new ArrayList<>();
+        if (product.isPresent()) {
+            ProductDto productDto = product.get().getDto(); // Fetch the ProductDto
+
+            predefinedQuestions.add(String.format("What are the key features of %s, %s?", productDto.getName(),
+                    productDto.getLatin()));
+            predefinedQuestions.add(String.format("What do I need to keep %s, %s?", productDto.getName(),
+                    productDto.getLatin()));
+            predefinedQuestions.add(String.format("What feed do I need to buy for %s, %s?", productDto.getName(), productDto.getLatin()));
+            // Add more predefined questions as needed
+
+            return predefinedQuestions;
+        } else {
+            predefinedQuestions.add("Product not found");
+            return predefinedQuestions;
         }
     }
 

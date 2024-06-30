@@ -47,4 +47,11 @@ public class CustomerProductController {
         return ResponseEntity.ok(randomQuestions);
     }
 
+    // New endpoint to get predefined questions and responses from OpenAI
+    @GetMapping("/details/{productId}")
+    public ResponseEntity<List<String>> getPredefinedQuestionsAndResponses(@PathVariable Long productId) {
+        List<String> responses = customerProductService.getPredefinedQuestionsAndResponses(productId);
+        return ResponseEntity.ok(responses);
+    }
+
 }

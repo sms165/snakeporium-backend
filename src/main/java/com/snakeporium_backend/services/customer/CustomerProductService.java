@@ -14,4 +14,8 @@ public interface CustomerProductService {
     ProductDetailDto getProductDetailById(Long productId);
 
     List<String> getRandomQuestionsWithProductDetails(Long productId);
+
+    List<String> getPredefinedQuestionsAndResponses(Long productId);
+
+    List<String> getPredefinedQuestionsWithProductDetails(Long productId);
 }
