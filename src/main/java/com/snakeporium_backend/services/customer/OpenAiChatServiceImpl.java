@@ -3,8 +3,10 @@ package com.snakeporium_backend.services.customer;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+@Service
 public class OpenAiChatServiceImpl {
 
     @Value("${openai.api.key}") // Load your API key from application.properties or application.yml

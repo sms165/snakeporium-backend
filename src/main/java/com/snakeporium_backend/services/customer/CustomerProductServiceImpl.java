@@ -11,6 +11,7 @@ import com.snakeporium_backend.repository.ProductRepository;
 import com.snakeporium_backend.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.snakeporium_backend.services.customer.OpenAiChatService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ public class CustomerProductServiceImpl implements CustomerProductService {
 
     private final ReviewRepository reviewRepository;
 
-    private final OpenAiChatService openAiChatService;
+    private final OpenAiChatServiceImpl openAiChatServiceImpl;
 
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -81,7 +82,7 @@ public class CustomerProductServiceImpl implements CustomerProductService {
         List<String> responses = new ArrayList<>();
 
         for (String question : predefinedQuestions) {
-            String response = openAiChatService.getResponse(question);
+            String response = openAiChatServiceImpl.getResponse(question);
             responses.add(response);
         }
 
