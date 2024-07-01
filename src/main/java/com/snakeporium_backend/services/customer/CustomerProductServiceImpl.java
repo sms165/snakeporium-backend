@@ -11,13 +11,17 @@ import com.snakeporium_backend.repository.ProductRepository;
 import com.snakeporium_backend.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.snakeporium_backend.services.customer.OpenAiChatService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
+
+import com.google.cloud.vertexai.VertexAI;
+import com.google.cloud.vertexai.api.GenerateContentResponse;
+import com.google.cloud.vertexai.generativeai.GenerativeModel;
+import com.google.cloud.vertexai.generativeai.ResponseHandler;
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +33,12 @@ public class CustomerProductServiceImpl implements CustomerProductService {
 
     private final ReviewRepository reviewRepository;
 
-    private final OpenAiChatServiceImpl openAiChatServiceImpl;
+    // Replace with your actual Project ID
+    private static final String projectId = "elite-height-428017-k9";
+    // Replace with the region where your model is deployed
+    private static final String location = "europe-west3";
+    // Replace with the name of your Gemini model
+    private static final String modelName = "gemini-1.5-flash-001";
 
     public List<ProductDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -77,12 +86,12 @@ public class CustomerProductServiceImpl implements CustomerProductService {
     }
 
     // Method to get predefined questions and fetch responses from OpenAI
-    public List<String> getPredefinedQuestionsAndResponses(Long productId) {
+    public List<String> getPredefinedQuestionsAndResponses(Long productId) throws IOException {
         List<String> predefinedQuestions = getPredefinedQuestionsWithProductDetails(productId);
         List<String> responses = new ArrayList<>();
 
         for (String question : predefinedQuestions) {
-            String response = openAiChatServiceImpl.getResponse(question);
+            String response = textInput(question);
             responses.add(response);
         }
 
@@ -108,6 +117,22 @@ public class CustomerProductServiceImpl implements CustomerProductService {
             predefinedQuestions.add("Product not found");
             return predefinedQuestions;
         }
+
     }
+
+    // Helper method to call Vertex AI and get response from Gemini model
+    private static String textInput(String textPrompt) throws IOException {
+        // Create Vertex AI client object
+        try (VertexAI vertexAI = new VertexAI(projectId, location)) {
+
+
+            GenerativeModel model = new GenerativeModel(modelName, vertexAI);
+
+            GenerateContentResponse response = model.generateContent(textPrompt);
+            String output = ResponseHandler.getText(response);
+            return output;
+        }
+    }
+
 
 }

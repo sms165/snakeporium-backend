@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -49,7 +50,7 @@ public class CustomerProductController {
 
     // New endpoint to get predefined questions and responses from OpenAI
     @GetMapping("/details/{productId}")
-    public ResponseEntity<List<String>> getPredefinedQuestionsAndResponses(@PathVariable Long productId) {
+    public ResponseEntity<List<String>> getPredefinedQuestionsAndResponses(@PathVariable Long productId) throws IOException {
         List<String> responses = customerProductService.getPredefinedQuestionsAndResponses(productId);
         return ResponseEntity.ok(responses);
     }
