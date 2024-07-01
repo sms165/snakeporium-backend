@@ -1,6 +1,5 @@
 package com.snakeporium_backend.config;
 
-
 import com.snakeporium_backend.filters.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -24,13 +28,11 @@ public class WebSecurityConfiguration {
 
     private final JwtRequestFilter authFilter;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-
                 .csrf(AbstractHttpConfigurer::disable)
-                // Disable CSRF protection for testing
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add CORS configuration
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/authenticate", "/register", "/order/**", "/test", "/api/cart/**",
                                 "api/customer/cart/", "/api/admin/orders", "api/customer/orders/**",
@@ -38,16 +40,14 @@ public class WebSecurityConfiguration {
                                 "api/customer" , "api/admin/sex",  "api/customer/details/**"+
                                         "/wishlist" +
                                         "/cart/**",
-                                 "api/customer" +
+                                "api/customer" +
                                         "/placeOrder",
-
-
                                 "/api" +
                                         "/admin/category", "/api/admin", "/api/admin" +
                                         "/product", "/api" +
                                         "/customer" +
                                         "/products", "/api/customer/cart"
-                                        )
+                        )
                         .permitAll()
                         .requestMatchers("/api/admin/**")
                         .authenticated()
@@ -58,6 +58,7 @@ public class WebSecurityConfiguration {
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -66,5 +67,19 @@ public class WebSecurityConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    // CORS configuration
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("https://snakeporium.yblackbox.com"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
