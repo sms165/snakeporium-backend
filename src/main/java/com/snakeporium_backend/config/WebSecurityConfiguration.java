@@ -35,8 +35,11 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/authenticate", "/register", "/order/**", "/test", "/api/cart/**",
                                 "api/customer/cart/", "/api/admin/orders", "api/customer/orders/**",
                                 "api/admin/product/**","api/customer","api/customer/profile", "api/customer/review",
-                                "api/customer" , "api/admin/sex", "/wishlist","/cart/**",
-                                 "api/customer" ,"/placeOrder",
+                                "api/customer" , "api/admin/sex",  "api/customer/details/**"+
+                                        "/wishlist" +
+                                        "/cart/**",
+                                 "api/customer" +
+                                        "/placeOrder",
 
 
                                 "/api" +
