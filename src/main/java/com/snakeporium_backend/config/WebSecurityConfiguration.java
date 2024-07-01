@@ -33,7 +33,7 @@ public class WebSecurityConfiguration {
                 // Disable CSRF protection for testing
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/authenticate", "/register", "/order/**", "/test", "/api/cart/**",
-                                "api/customer/cart/", "/api/admin/orders","/api/customer/details/**", "api/customer/orders/**",
+                                "api/customer/cart/", "/api/admin/orders", "api/customer/orders/**",
                                 "api/admin/product/**","api/customer", "api/customer" +
                                         "/profile", "api/customer" +
                                         "/review",
