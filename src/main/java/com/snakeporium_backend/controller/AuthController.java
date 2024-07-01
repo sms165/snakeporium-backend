@@ -42,6 +42,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "https://snakeporium.yblackbox.com")
 public class AuthController {
 
+
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
