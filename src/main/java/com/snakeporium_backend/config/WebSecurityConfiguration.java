@@ -41,7 +41,6 @@ public class WebSecurityConfiguration {
                                  "api/customer" +
                                         "/placeOrder",
 
-
                                 "/api" +
                                         "/admin/category", "/api/admin", "/api/admin" +
                                         "/product", "/api" +
