@@ -3,6 +3,22 @@ package com.snakeporium_backend.controller;
 
 
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.snakeporium_backend.dto.AuthenticationRequest;
 import com.snakeporium_backend.dto.RegisterRequest;
 import com.snakeporium_backend.dto.UserDto;
@@ -10,32 +26,9 @@ import com.snakeporium_backend.entity.User;
 import com.snakeporium_backend.repository.UserRepository;
 import com.snakeporium_backend.services.auth.AuthService;
 import com.snakeporium_backend.utils.JwtUtil;
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
-
-import org.apache.catalina.Authenticator;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,41 +49,43 @@ public class AuthController {
 
 
     @PostMapping("/authenticate")
-    public void createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest, HttpServletResponse response) throws IOException, JSONException {
-        String username = authenticationRequest.getUsername();
-        System.out.println("Username: " + username);
+    public ResponseEntity<?> authenticate(
+        @RequestBody AuthenticationRequest request,
+        HttpServletResponse response
+    ) throws IOException {
+        
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password");
-            return;
-        } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during authentication");
-            return;
-        }
-
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        Optional<User> optionalUser = userRepository.findByEmail(userDetails.getUsername());
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
-
-        if (optionalUser.isPresent()) {
-            response.getWriter().write(new JSONObject()
-                    .put("userId", optionalUser.get().getId())
-                    .put("role", optionalUser.get().getRole())
-                    .toString()
+            // 1. Authenticate
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()
+                )
             );
-
-            response.addHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE, PATCH");
-            response.addHeader("Access-Control-Allow-Headers", "Authorization, X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept, X-Custom-Header");
-            response.addHeader("Access-Control-Expose-Headers", "Authorization");
-            response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwt);
-        } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not found");
+            
+            // 2. Load user
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+            Optional<User> user = userRepository.findByEmail(request.getUsername());
+            
+            if (user.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+            }
+            
+            // 3. Generate token
+            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            
+            // 4. Return response
+            return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + jwt)
+                .body(Map.of(
+                    "userId", user.get().getId(),
+                    "role", user.get().getRole()
+                ));
+                
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
-
-
-
-}
+    }
 
     @PostMapping("/test")
     public ResponseEntity<String> testEndpoint() {
