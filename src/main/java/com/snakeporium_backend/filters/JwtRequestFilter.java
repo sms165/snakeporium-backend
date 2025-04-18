@@ -1,15 +1,9 @@
 package com.snakeporium_backend.filters;
 
 
-import com.snakeporium_backend.services.jwt.UserDetailsServiceImpl;
-import com.snakeporium_backend.utils.JwtUtil;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.util.logging.Logger;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,8 +11,16 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.logging.Logger;
+import com.snakeporium_backend.services.jwt.UserDetailsServiceImpl;
+import com.snakeporium_backend.utils.JwtUtil;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -49,6 +51,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         } else {
             System.out.println("JWT Token does not begin with Bearer String");
+            System.out.println(authHeader);
         }
 
 
