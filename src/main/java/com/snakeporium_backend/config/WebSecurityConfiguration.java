@@ -35,6 +35,7 @@ public class WebSecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add CORS configuration
                 .authorizeHttpRequests((authz) -> authz
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/authenticate", "/register", "/order/**", "/test", "/api/cart/**",
                                 "api/customer/cart/", "/api/admin/orders", "api/customer/orders/**",
                                 "api/admin/product/**","api/customer","api/customer/profile", "api/customer/review",
