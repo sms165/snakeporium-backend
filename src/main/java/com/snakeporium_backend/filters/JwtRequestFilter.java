@@ -36,6 +36,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwtToken = null;
         String username = null;
 
+        final String requestURI = request.getRequestURI();
+        // Skip JWT check for public endpoints
+    if (requestURI.equals("/") || requestURI.equals("/authenticate") || requestURI.equals("/register")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtToken = authHeader.substring(7);
             System.out.println(" JWT Token: " + jwtToken);
