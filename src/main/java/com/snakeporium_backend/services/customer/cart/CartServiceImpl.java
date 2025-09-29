@@ -40,7 +40,7 @@ public class CartServiceImpl implements CartService {
     private CouponRepository couponRepository;
 
     public ResponseEntity<?> addProductToCart(AddProductInCartDto addProductInCartDto) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(addProductInCartDto.getUserId(), OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
 
         if (activeOrder == null) {
             logger.warn("No active order found for user {}", addProductInCartDto.getUserId());
@@ -107,7 +107,7 @@ public class CartServiceImpl implements CartService {
 
         // Find the active order for the user
         System.out.println("Finding active order for user: " + userId);
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
 
         if (activeOrder == null) {
             System.out.println("No active order found for user " + userId);
@@ -143,7 +143,7 @@ public class CartServiceImpl implements CartService {
 
 
     public OrderDto getCardByUserId(Long userId) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
 
         List<CartItemsDto> cartItemsDtoList =
                 activeOrder.getCartItems().stream().map(CartItems ::getCartDto).collect(Collectors.toList());
@@ -164,7 +164,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public OrderDto applyCoupon(Long userId, String code) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
         Coupon coupon = couponRepository.findByCode(code).orElseThrow(() -> new ValidationException("Coupon Not Found"));
 
         if (couponIsExpired(coupon)) {
@@ -192,7 +192,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public OrderDto increaseProductQuantity(AddProductInCartDto addProductInCartDto) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(addProductInCartDto.getUserId(), OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
         Optional<Product> optionalProduct = productRepository.findById(addProductInCartDto.getProductId());
 
         Optional<CartItems> optionalCartItems =
@@ -223,7 +223,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public OrderDto decreaseProductQuantity(AddProductInCartDto addProductInCartDto) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(addProductInCartDto.getUserId(), OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
         Optional<Product> optionalProduct = productRepository.findById(addProductInCartDto.getProductId());
 
         Optional<CartItems> optionalCartItems =

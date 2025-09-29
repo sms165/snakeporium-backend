@@ -4,6 +4,7 @@ import com.snakeporium_backend.entity.Order;
 import com.snakeporium_backend.enums.OrderStatus;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -28,5 +29,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByDateBetweenAndOrderStatus(Date startOfMonth, Date endOfMonth, OrderStatus orderStatus);
 
     Long countByOrderStatus(OrderStatus orderStatus);
+
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.cartItems WHERE o.user.id = :userId AND o.orderStatus = :orderStatus")
+Order findByUserIdAndOrderStatusWithCartItems(Long userId, OrderStatus orderStatus);
 
 }
