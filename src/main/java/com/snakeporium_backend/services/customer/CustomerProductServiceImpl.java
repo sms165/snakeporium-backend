@@ -40,10 +40,10 @@ public class CustomerProductServiceImpl implements CustomerProductService {
     // Replace with the name of your Gemini model
     private static final String modelName = "gemini-1.5-flash-001";
 
-    public List<ProductDto> getAllProducts() {
-        List<Product> products = productRepository.findAll();
-        return products.stream().map(Product::getDto).collect(Collectors.toList());
-    }
+   public List<ProductDto> getAllProducts() {
+    List<Product> products = productRepository.findAllWithCategory();
+    return products.stream().map(Product::getDto).collect(Collectors.toList());
+}
 
     public List<ProductDto> searchProductByTitle (String name) {
         List<Product> products = productRepository.findAllByNameContaining(name);
