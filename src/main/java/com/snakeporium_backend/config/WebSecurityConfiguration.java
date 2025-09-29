@@ -59,7 +59,8 @@ public class WebSecurityConfiguration {
         "/api/admin",
         "/api/admin/product",
         "/api/customer/products",
-        "/api/customer/cart"
+        "/api/customer/cart",
+        "/error"
     ).permitAll()
     .requestMatchers("/api/admin/**").authenticated()
     .anyRequest().authenticated())
