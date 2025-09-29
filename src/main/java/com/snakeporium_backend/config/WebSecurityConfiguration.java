@@ -36,20 +36,32 @@ public class WebSecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add CORS configuration
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/").permitAll()
-                        .requestMatchers("/authenticate", "/register", "/order/**", "/test", "/api/cart/**",
-                                "/api/customer/cart/", "/api/admin/orders", "/api/customer/orders/**",
-                                "/api/admin/product/**","/api/customer","/api/customer/profile", "/api/customer/review",
-                                "/api/customer" , "/api/admin/sex",  "/api/customer/details",
-                                        "/wishlist",
-                                        "/cart/**",
-                                "/api/customer" +
-                                        "/placeOrder",
-                                "/api" +
-                                        "/admin/category", "/api/admin", "/api/admin" +
-                                        "/product", "/api" +
-                                        "/customer" +
-                                        "/products", "/api/customer/cart"
-                        )
+                        .requestMatchers(
+    "/",
+    "/authenticate",
+    "/register",
+    "/order/**",
+    "/test",
+    "/api/cart/**",
+    "/api/customer/cart/",
+    "/api/admin/orders",
+    "/api/customer/orders/**",
+    "/api/admin/product/**",
+    "/api/customer",
+    "/api/customer/profile",
+    "/api/customer/review",
+    "/api/admin/sex",
+    "/api/customer/details",
+    "/wishlist",
+    "/cart/**",
+    "/api/customer/placeOrder",
+    "/api/admin/category",
+    "/api/admin",
+    "/api/admin/product",
+    "/api/customer/products",
+    "/api/customer/cart",
+    "/error" // <--- add this line
+)
                         .permitAll()
                         .requestMatchers("/api/admin/**")
                         .authenticated()
