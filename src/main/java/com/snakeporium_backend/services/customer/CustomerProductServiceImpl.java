@@ -51,21 +51,21 @@ public class CustomerProductServiceImpl implements CustomerProductService {
     }
 
     public ProductDetailDto getProductDetailById(Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        if(product.isPresent()) {
-            List<FAQ> faqList = faqRepository.findAllByProductId(productId);
-            List<Review> reviewList = reviewRepository.findAllByProductId(productId);
+    Optional<Product> product = productRepository.findByIdWithCategoryAndSex(productId);
+    if(product.isPresent()) {
+        List<FAQ> faqList = faqRepository.findAllByProductId(productId);
+        List<Review> reviewList = reviewRepository.findAllByProductId(productId);
 
-            ProductDetailDto productDetailDto = new ProductDetailDto();
+        ProductDetailDto productDetailDto = new ProductDetailDto();
 
-            productDetailDto.setProductDto(product.get().getDto());
-            productDetailDto.setFaqDtoList(faqList.stream().map(FAQ ::getFAQDto).collect(Collectors.toList()));
-            productDetailDto.setReviewDtoList(reviewList.stream().map(Review ::getDto).collect(Collectors.toList()));
+        productDetailDto.setProductDto(product.get().getDto());
+        productDetailDto.setFaqDtoList(faqList.stream().map(FAQ::getFAQDto).collect(Collectors.toList()));
+        productDetailDto.setReviewDtoList(reviewList.stream().map(Review::getDto).collect(Collectors.toList()));
 
-            return productDetailDto;
-        }
-        return null;
+        return productDetailDto;
     }
+    return null;
+}
 
     public List<String> getRandomQuestionsWithProductDetails(Long productId) {
         Optional<Product> product = productRepository.findById(productId);
