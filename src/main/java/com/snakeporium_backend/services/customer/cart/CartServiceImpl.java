@@ -164,7 +164,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public OrderDto applyCoupon(Long userId, String code) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatus(userId, OrderStatus.Pending);
         Coupon coupon = couponRepository.findByCode(code).orElseThrow(() -> new ValidationException("Coupon Not Found"));
 
         if (couponIsExpired(coupon)) {
@@ -223,7 +223,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public OrderDto decreaseProductQuantity(AddProductInCartDto addProductInCartDto) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(addProductInCartDto.getUserId(), OrderStatus.Pending);
         Optional<Product> optionalProduct = productRepository.findById(addProductInCartDto.getProductId());
 
         Optional<CartItems> optionalCartItems =
