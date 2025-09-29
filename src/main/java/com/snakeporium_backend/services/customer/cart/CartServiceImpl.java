@@ -40,7 +40,7 @@ public class CartServiceImpl implements CartService {
     private CouponRepository couponRepository;
 
     public ResponseEntity<?> addProductToCart(AddProductInCartDto addProductInCartDto) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(addProductInCartDto.getUserId(), OrderStatus.Pending);
 
         if (activeOrder == null) {
             logger.warn("No active order found for user {}", addProductInCartDto.getUserId());
@@ -192,7 +192,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public OrderDto increaseProductQuantity(AddProductInCartDto addProductInCartDto) {
-        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(userId, OrderStatus.Pending);
+        Order activeOrder = orderRepository.findByUserIdAndOrderStatusWithCartItems(addProductInCartDto.getUserId(), OrderStatus.Pending);
         Optional<Product> optionalProduct = productRepository.findById(addProductInCartDto.getProductId());
 
         Optional<CartItems> optionalCartItems =
