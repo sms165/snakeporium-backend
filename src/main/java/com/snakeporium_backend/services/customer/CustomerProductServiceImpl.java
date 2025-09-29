@@ -86,39 +86,38 @@ public class CustomerProductServiceImpl implements CustomerProductService {
     }
 
     // Method to get predefined questions and fetch responses from OpenAI
-    public List<String> getPredefinedQuestionsAndResponses(Long productId) throws IOException {
-        List<String> predefinedQuestions = getPredefinedQuestionsWithProductDetails(productId);
-        List<String> responses = new ArrayList<>();
+   public List<String> getPredefinedQuestionsAndResponses(Long productId) throws IOException {
+    List<String> predefinedQuestions = getPredefinedQuestionsWithProductDetails(productId);
+    List<String> responses = new ArrayList<>();
 
-        for (String question : predefinedQuestions) {
-            String response = textInput(question);
-            responses.add(response);
-        }
-
-        return responses;
+    for (String question : predefinedQuestions) {
+        String response = textInput(question);
+        responses.add(response);
     }
 
-    // Additional method to generate predefined questions related to product
-    public List<String> getPredefinedQuestionsWithProductDetails(Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        List<String> predefinedQuestions = new ArrayList<>();
-        if (product.isPresent()) {
-            ProductDto productDto = product.get().getDto(); // Fetch the ProductDto
+    return responses;
+}
 
-            predefinedQuestions.add(String.format("What are the key features of %s, %s?", productDto.getName(),
-                    productDto.getLatin()));
-            predefinedQuestions.add(String.format("What do I need to keep %s, %s?", productDto.getName(),
-                    productDto.getLatin()));
-            predefinedQuestions.add(String.format("What feed do I need to buy for %s, %s?", productDto.getName(), productDto.getLatin()));
-            // Add more predefined questions as needed
+// Update this method to use fetch join!
+public List<String> getPredefinedQuestionsWithProductDetails(Long productId) {
+    Optional<Product> product = productRepository.findByIdWithCategoryAndSex(productId); // <-- use fetch join
+    List<String> predefinedQuestions = new ArrayList<>();
+    if (product.isPresent()) {
+        ProductDto productDto = product.get().getDto(); // Safe to access category/sex
 
-            return predefinedQuestions;
-        } else {
-            predefinedQuestions.add("Product not found");
-            return predefinedQuestions;
-        }
+        predefinedQuestions.add(String.format("What are the key features of %s, %s?", productDto.getName(),
+                productDto.getLatin()));
+        predefinedQuestions.add(String.format("What do I need to keep %s, %s?", productDto.getName(),
+                productDto.getLatin()));
+        predefinedQuestions.add(String.format("What feed do I need to buy for %s, %s?", productDto.getName(), productDto.getLatin()));
+        // Add more predefined questions as needed
 
+        return predefinedQuestions;
+    } else {
+        predefinedQuestions.add("Product not found");
+        return predefinedQuestions;
     }
+}
 
     // Helper method to call Vertex AI and get response from Gemini model
     private static String textInput(String textPrompt) throws IOException {
