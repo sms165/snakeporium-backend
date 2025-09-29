@@ -30,7 +30,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Long countByOrderStatus(OrderStatus orderStatus);
 
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.cartItems WHERE o.user.id = :userId AND o.orderStatus = :orderStatus")
+   @Query("""
+    SELECT DISTINCT o FROM Order o
+    LEFT JOIN FETCH o.cartItems ci
+    LEFT JOIN FETCH ci.product
+    WHERE o.user.id = :userId AND o.orderStatus = :orderStatus
+""")
 Order findByUserIdAndOrderStatusWithCartItems(Long userId, OrderStatus orderStatus);
 
 }
